@@ -1,25 +1,61 @@
-let $buttons = $('#buttons > button')
+let $buttons = $('#buttonWrapper > button')
 let $slides = $('#slides')
 let $images = $slides.children('img')
-let $firstCopy = $images.eq(0).clone(true)
-let $lastCopy = $images.eq($images.length - 1).clone(true)
-
-
-$slides.append($firstCopy)
-$slides.prepend($lastCopy)
-
-$slides.css({transform:'translateX(-400px)'})
-
 let current = 0
 
-$('#buttons').on('click', 'button', function(e){
-    let $button = $(e.currentTarget)
-    let index = $button.index()//index是所处第几个
-    $slides.css({transform:`translateX(${- (index+1) *400}px)`})
+makeFakeSlides()
+
+$slides.css({transform:'translateX(-400px)'}).css({transition:'none'})
+//transition:'none' 解决打开页面的瞬间会有最后一张到第一张的BUG
+
+bindEvents()
+
+$(next).on('click',function(){
+    goToSlide(current+1)
+})
+$(previous).on('click',function(){
+    goToSlide(current-1)
+})
+
+//设置自动轮播
+let timer = setInterval(function(){
+    goToSlide(current+1)
+},2000)
+
+//设置鼠标悬停离走
+$('.container').on('mouseenter', function(){
+    window.clearInterval(timer)
+}).on('mouseleave', function(){
+    timer = setInterval(function(){
+        goToSlide(current+1)
+    },2000)
+})
+
+////下方为函数
+function bindEvents(){
+    $('#buttonWrapper').on('click', 'button', function(e){
+        let $button = $(e.currentTarget)
+        let index = $button.index()//index是所处第几个
+        goToSlide(index)
+    })
+}
+function makeFakeSlides(){
+    let $firstCopy = $images.eq(0).clone(true)
+    let $lastCopy = $images.eq($images.length - 1).clone(true)
+    $slides.append($firstCopy)
+    $slides.prepend($lastCopy)
+}
+//重要函数
+function goToSlide(index){
+    if(index > $buttons.length-1){
+        index = 0
+    }else if(index < 0){
+        index = $buttons.length - 1
+    }    
     if(current === $buttons.length-1 && index === 0){
         $slides.css({transform:`translateX(${-($buttons.length+1)*400}px)`})
           .one('transitionend', function(){
-            $slides.hide().offset()
+            $slides.hide().offset()//加上offsethide不会被show覆盖掉
             $slides.css({transform:`translateX(${- (index+1) *400}px`}).show()
           })
     }else if(current === 0 && index === $buttons.length-1){
@@ -28,39 +64,8 @@ $('#buttons').on('click', 'button', function(e){
             $slides.hide().offset()
             $slides.css({transform:`translateX(${- (index+1) *400}px)`}).show()
           })
+    }else{
+        $slides.css({transform:`translateX(${- (index+1) *400}px)`})
     }
     current = index
-})
-
-//$buttons.eq(0).on('click', function(){
-//    if(current === 2){
-//       console.log('说明是最后一个到第一个')
-//       $slides.css({transform:'translateX(-1600px)'})
-//        .one('transitionend', function(){
-//          $slides.hide().offset()
-//          $slides.css({transform:'translateX(-400px)'}).show()
-//        })
-//  }else{
-//      $slides.css({transform:'translateX(-400px)'})
-//  }
-//    current = 0
-//})
-//$buttons.eq(1).on('click', function(){
-//   $slides.css({transform:'translateX(-800px)'})
-//   current = 1
-//})
-
-
-//$buttons.eq(2).on('click', function(){
-//  if(current === 0){
-//      console.log('说明是第一个到最后一个')
-//      $slides.css({transform:'translateX(0px)'})
-//        .one('transitionend', function(){
-//          $slides.hide().offset()
-//          $slides.css({transform:'translateX(-1200px)'}).show()
-//        })
-//  }else{
-//      $slides.css({transform:'translateX(-1200px)'})
-//  }
-//  current = 2
-//})
+}
