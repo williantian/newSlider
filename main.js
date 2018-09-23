@@ -5,9 +5,8 @@ let current = 0
 
 makeFakeSlides()
 
-$slides.css({transform:'translateX(-400px)'}).css({transition:'none'})
-//transition:'none' 解决打开页面的瞬间会有最后一张到第一张的BUG
-
+$slides.css({transform:'translateX(-400px)'})
+//刷新  会有最后一张到第一张的动画BUG
 bindEvents()
 
 $(next).on('click',function(){
