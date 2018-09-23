@@ -6,7 +6,7 @@ let current = 0
 makeFakeSlides()
 
 $slides.css({transform:'translateX(-400px)'})
-//刷新  会有最后一张到第一张的动画BUG
+//刷新  会有最后一张到第一张的动画BUG 
 bindEvents()
 
 $(next).on('click',function(){
